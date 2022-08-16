@@ -11,7 +11,7 @@ module.exports = app => {
                 maxAge: 1000 * 60 * 60 * 24
             },
             store: new MongoStore({
-                mongoUrl: 'mongodb://localhost/'
+                mongoUrl: 'mongodb://localhost/lab-express-basic-auth'
             })
         })
     )
