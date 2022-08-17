@@ -1,15 +1,18 @@
 const bcrypt = require('bcrypt');
+const { isLoggedOut } = require('../middleware/route-guard');
+const { isLoggedIn } = require('../middleware/route-guard');
 const saltRounds = 10; 
 const router = require("express").Router();
 const User = require('../models/User.model');
 
+
 //GET /signup
-router.get('/signup', (req, res) => {
+router.get('/signup', isLoggedOut, (req, res) => {
     res.render('auth/signup');
 });
 
 //POST /signup
-router.post('/signup', (req, res) => {
+router.post('/signup', isLoggedOut, (req, res) => {
     const { username, password } = req.body;
 
     //Checking if both fields contain data
@@ -36,12 +39,12 @@ router.post('/signup', (req, res) => {
 });
 
 //GET /login 
-router.get('/login', (req, res) => {
+router.get('/login', isLoggedOut, (req, res) => {
     res.render('auth/login');
 });
 
 //POST /login
-router.post('/login', (req, res) => {
+router.post('/login', isLoggedOut, (req, res) => {
     const { username, password } = req.body;
     
     //Checking if both fields contain data
@@ -68,8 +71,31 @@ router.post('/login', (req, res) => {
 });
 
 //GET /userProfile
-router.get('/profile', (req, res) => {
+router.get('/profile', isLoggedIn, (req, res) => {
     res.render('auth/userProfile', { userInSession: req.session.currentUser });
+});
+
+//GET /main
+router.get('/main', isLoggedIn, (req, res) => {
+    res.render('auth/main');
+});
+
+//GET /private
+router.get('/private', isLoggedIn, (req, res) => {
+    res.render('auth/private');
+});
+
+//GET /logout
+router.get('/logout', isLoggedIn, (req, res) => {
+    res.render('auth/logout');
+});
+
+//POST /logout
+router.post('/logout', isLoggedIn, (req, res, next) => {
+    req.session.destroy(err => {
+        if (err) next(err);
+        res.redirect('/');
+    });
 });
 
 module.exports = router; 
